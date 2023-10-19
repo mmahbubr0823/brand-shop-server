@@ -1,4 +1,5 @@
 const express = require('express')
+const { MongoClient, ServerApiVersion } = require('mongodb');
 const cors = require('cors');
 const app = express()
 const port = process.env.PORT || 5000;
@@ -6,12 +7,11 @@ const port = process.env.PORT || 5000;
 // middlewares
 app.use(cors())
 app.use(express.json())
-// EuqvYNoG0U6wYBNd
-// brandShop
+//PeHaD1Bqtnna4Qzd
+// foodAndBeverage
 
 
-const { MongoClient, ServerApiVersion } = require('mongodb');
-const uri = "mongodb+srv://brandShop:EuqvYNoG0U6wYBNd@cluster0.scdnbhm.mongodb.net/?retryWrites=true&w=majority";
+const uri = "mongodb+srv://foodAndBeverage:PeHaD1Bqtnna4Qzd@cluster0.scdnbhm.mongodb.net/?retryWrites=true&w=majority";
 
 // Create a MongoClient with a MongoClientOptions object to set the Stable API version
 const client = new MongoClient(uri, {
@@ -26,7 +26,23 @@ async function run() {
   try {
     // Connect the client to the server	(optional starting in v4.7)
     await client.connect();
-    
+    const productCollection = client.db('productDB').collection('product');
+
+    // get products 
+
+    app.get('/products', async (req, res) => {
+      const cursor = productCollection.find();
+      const result = await cursor.toArray();
+      res.send(result);
+  })
+
+    app.post('/products', async (req, res) => {
+      const allProducts = req.body;
+      console.log(allProducts);
+      const result = await productCollection.insertOne(allProducts);
+      res.send(result);
+  })
+
 
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
@@ -40,9 +56,8 @@ run().catch(console.dir);
 
 
 app.get('/', (req, res) => {
-  res.send('Hello World!')
+  res.send('hallow')
 })
-
-app.listen(port, () => {
-  console.log(`Example app listening on port ${port}`)
+app.listen(port, (rq, res) => {
+  console.log(`brand: ${port}`);
 })
