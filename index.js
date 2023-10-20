@@ -1,5 +1,5 @@
 const express = require('express')
-const { MongoClient, ServerApiVersion } = require('mongodb');
+const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 const cors = require('cors');
 const app = express()
 const port = process.env.PORT || 5000;
@@ -27,8 +27,15 @@ async function run() {
     // Connect the client to the server	(optional starting in v4.7)
     await client.connect();
     const productCollection = client.db('productDB').collection('product');
+    const selectedProductCollection = client.db('selectedProductDB').collection('selectedProduct');
 
     // get products 
+
+    app.get('/selectedProducts', async (req, res) => {
+      const cursor = selectedProductCollection.find();
+      const result = await cursor.toArray();
+      res.send(result);
+  })
 
     app.get('/products', async (req, res) => {
       const cursor = productCollection.find();
@@ -36,6 +43,13 @@ async function run() {
       res.send(result);
   })
 
+  // posting server 
+    app.post('/selectedProducts', async (req, res) => {
+      const allProducts = req.body;
+      console.log(allProducts);
+      const result = await selectedProductCollection.insertOne(allProducts);
+      res.send(result);
+  })
     app.post('/products', async (req, res) => {
       const allProducts = req.body;
       console.log(allProducts);
