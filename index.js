@@ -43,6 +43,13 @@ async function run() {
       res.send(result);
   })
 
+  app.get('/products/:id', async (req, res) => {
+    const id = req.params.id;
+    const query = { _id: new ObjectId(id) }
+    const result = await productCollection.findOne(query);
+    res.send(result);
+})
+
   // posting server 
     app.post('/selectedProducts', async (req, res) => {
       const allProducts = req.body;
@@ -57,7 +64,31 @@ async function run() {
       res.send(result);
   })
 
-  // delete a item 
+  // updating data 
+
+  app.put('/products/:id', async (req, res) => {
+    const id = req.params.id;
+    const filter = { _id: new ObjectId(id) }
+    const options = { upsert: true };
+    const updatedProducts = req.body;
+
+    const newProduct = {
+        $set: {
+            image: updatedProducts.image,
+            name: updatedProducts.name,
+            type: updatedProducts.type,
+            price: updatedProducts.price,
+            brand: updatedProducts.brand,
+            rating: updatedProducts.rating,
+            description: updatedProducts.description
+        }
+    }
+
+    const result = await productCollection.updateOne(filter, newProduct, options);
+    res.send(result);
+})
+
+  // delete an item 
 
   app.delete('/selectedProducts/:id', async (req, res) => {
     const id = req.params.id;
